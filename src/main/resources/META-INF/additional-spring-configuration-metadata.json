@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "qsbk.login.enable-sms",
+      "type": "java.lang.Boolean",
+      "description": "Description for qsbk.login.enable-sms."
+    },
+    {
+      "name": "qsbk.login.expire-in",
+      "type": "java.lang.Long",
+      "description": "Description for qsbk.login.expire-in."
+    }
+  ]
+}
