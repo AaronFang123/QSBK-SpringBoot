@@ -1,3 +1,9 @@
+## 分支管理
+* `master`: 默认分支，不在此进行开发
+* `api-development`: 主要开发分支，feature分支合并至此(只允许文档变更之类的功能无关的commit直接提交到此分支)
+* `api-development: d(int)` feature分支，某日完成的开发进度提交到此分支，测试后合并到`api-development`
+
+
 ## 设计
 ### 1. API设计
 API 文档 https://documenter.getpostman.com/view/10399312/SzYUYg1L
