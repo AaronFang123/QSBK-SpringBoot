@@ -9,6 +9,11 @@
       "name": "qsbk.login.expire-in",
       "type": "java.lang.Long",
       "description": "Description for qsbk.login.expire-in."
+    },
+    {
+      "name": "qsbk.token.expire-in",
+      "type": "java.lang.Long",
+      "description": "Description for qsbk.token.expire-in."
     }
   ]
 }

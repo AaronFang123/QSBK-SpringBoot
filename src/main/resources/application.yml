@@ -23,4 +23,6 @@ qsbk:
   login:
     enable-sms: true
     expire-in: 60
+  token:
+    expire-in: 30000
 

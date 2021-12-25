@@ -1,6 +1,6 @@
 package fun.aaronfang.qsbk.demo.util;
 
-import fun.aaronfang.qsbk.demo.contants.RedisState;
+import fun.aaronfang.qsbk.demo.constants.RedisState;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;

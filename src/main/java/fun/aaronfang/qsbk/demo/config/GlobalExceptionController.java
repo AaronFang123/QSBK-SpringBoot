@@ -37,6 +37,6 @@ class GlobalExceptionController {
     public Result ApiValidationExceptionHandler(ApiValidationException e) {
         int errCode = e.getErrCode();
         String msg = e.getMsg();
-        return Result.buildResult(msg, errCode);
+        return Result.buildResult(errCode, msg, null);
     }
 }

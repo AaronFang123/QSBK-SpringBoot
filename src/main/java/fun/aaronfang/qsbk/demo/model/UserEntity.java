@@ -1,6 +1,10 @@
 package fun.aaronfang.qsbk.demo.model;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -111,5 +115,21 @@ public class UserEntity {
     @PrePersist
     void createAt() {
         this.createTime = Math.toIntExact(System.currentTimeMillis());
+    }
+
+
+    /**
+     * 根据User信息生成Token
+     * @param user UserEntity实体
+     * @return token
+     */
+    public static String getToken(UserEntity user, int expireIn) {
+        String token="";
+        token= JWT.create()
+                .withAudience(String.valueOf(user.getId()))
+                .withExpiresAt(new Date(System.currentTimeMillis() + expireIn))
+                .withIssuedAt(new Date(System.currentTimeMillis()))
+                .sign(Algorithm.HMAC256(user.getPassword()));
+        return token;
     }
 }

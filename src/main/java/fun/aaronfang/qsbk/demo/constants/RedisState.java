@@ -1,4 +1,4 @@
-package fun.aaronfang.qsbk.demo.contants;
+package fun.aaronfang.qsbk.demo.constants;
 
 import java.util.concurrent.TimeUnit;
 

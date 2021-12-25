@@ -12,5 +12,8 @@ public class QsbkProps {
     private boolean enableSms;
 
     @Value("${qsbk.login.expire-in}")
-    private long expireIn;
+    private long loginExpireIn;
+
+    @Value("${qsbk.token.expire-in}")
+    private long tokenExpireIn;
 }
