@@ -2,6 +2,7 @@ package fun.aaronfang.qsbk.demo.model;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -18,9 +19,11 @@ public class UserEntity {
     private String email;
     private byte status;
     private Integer createTime;
+    private UserinfoEntity userinfoEntity;
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -51,6 +54,7 @@ public class UserEntity {
 
     @Basic
     @Column(name = "password")
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -114,9 +118,18 @@ public class UserEntity {
 
     @PrePersist
     void createAt() {
-        this.createTime = Math.toIntExact(System.currentTimeMillis());
+        this.createTime = (int)System.currentTimeMillis();
     }
 
+    @OneToOne(mappedBy = "userEntity")
+    @JsonIgnore
+    public UserinfoEntity getUserinfoEntity() {
+        return userinfoEntity;
+    }
+
+    public void setUserinfoEntity(UserinfoEntity userinfoEntity) {
+        this.userinfoEntity = userinfoEntity;
+    }
 
     /**
      * 根据User信息生成Token

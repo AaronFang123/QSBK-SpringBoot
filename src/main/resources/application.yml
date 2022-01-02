@@ -13,16 +13,29 @@ spring:
         max-idle: 20
         max-wait: 30000
         min-idle: 0
+  jpa:
+    show-sql: true
 
 server:
   servlet:
     context-path: /api/v1
   port: 8080
 
+logging:
+  level:
+    org.springframework.security:
+      - debug
+      - info
+    org.springframework.web: error
+    org.hibernate.SQL: debug
+    org.hibernate.engine.QueryParameters: debug
+    org.hibernate.engine.query.HQLQueryPlan: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+
 qsbk:
   login:
     enable-sms: true
     expire-in: 60
   token:
-    expire-in: 30000
+    expire-in: 100000
 

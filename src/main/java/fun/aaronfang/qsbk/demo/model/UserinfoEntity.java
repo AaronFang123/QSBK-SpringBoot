@@ -1,38 +1,31 @@
 package fun.aaronfang.qsbk.demo.model;
 
+import org.apache.catalina.User;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "userinfo", schema = "info", catalog = "")
+@Table(name = "userinfo", schema = "info")
 public class UserinfoEntity {
     private int id;
-    private int userId;
     private int age;
     private byte sex;
     private byte qg;
     private String job;
     private String path;
     private String birthday;
+    private UserEntity userEntity;
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    @Basic
-    @Column(name = "user_id")
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     @Basic
@@ -95,16 +88,26 @@ public class UserinfoEntity {
         this.birthday = birthday;
     }
 
+    @OneToOne(cascade = CascadeType.ALL, targetEntity = UserEntity.class) //JPA注释： 一对一 关系
+    @JoinColumn(name = "user_id", referencedColumnName="id")
+    public UserEntity getUserEntity() {
+        return userEntity;
+    }
+
+    public void setUserEntity(UserEntity userEntity) {
+        this.userEntity = userEntity;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserinfoEntity that = (UserinfoEntity) o;
-        return id == that.id && userId == that.userId && age == that.age && sex == that.sex && qg == that.qg && Objects.equals(job, that.job) && Objects.equals(path, that.path) && Objects.equals(birthday, that.birthday);
+        return id == that.id && age == that.age && sex == that.sex && qg == that.qg && Objects.equals(job, that.job) && Objects.equals(path, that.path) && Objects.equals(birthday, that.birthday) && Objects.equals(userEntity, that.userEntity);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, age, sex, qg, job, path, birthday);
+        return Objects.hash(id, age, sex, qg, job, path, birthday, userEntity);
     }
 }

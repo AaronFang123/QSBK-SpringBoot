@@ -34,7 +34,7 @@ Route::group('api/:version/',function(){
     // 获取话题分类
     Route::get('topicclass','api/v1.TopicClass/index');
     // 获取热门话题
-    Route::get('hottopic','api/v1.Topic/index');
+    Route::get('hottopic   ','api/v1.Topic/index');
     // 获取指定话题分类下的话题列表
     Route::get('topicclass/:id/topic/:page', 'api/v1.TopicClass/topic');
     // 获取文章详情
@@ -176,8 +176,30 @@ Route::group('api/:v1/',function(){
 3. 用户状态验证（拦截器 todo）
 4. 缓存配置： Redis设置(done)
 5. 自定义配置（done）
-
-
 ### Day3
 1. 用户状态验证（拦截器 todo）
 2. token凭证保存（session）
+### Day4
+1. 解决如何做好一对一关联的级联添加 \
+外键列不要声明为实体列（例如userinfo的user_id）
+   
+UserinfoEntity.java （主表：userinfo）
+```java
+@OneToOne(cascade = CascadeType.ALL, targetEntity = UserEntity.class) //JPA注释： 一对一 关系
+@JoinColumn(name = "user_id", referencedColumnName="id")
+    public UserEntity getUserEntity() {
+    return userEntity;
+}
+```
+`name`:外键列 `referencedColumnName`: 被引用的列（这里是user表的id
+）
+
+UserEntity.java（附表：user）
+```java
+    @OneToOne(mappedBy = "userEntity")
+    @JsonIgnore
+    public UserinfoEntity getUserinfoEntity() {
+        return userinfoEntity;
+    }
+```
+`mappedBy`: 主实体中的引用
