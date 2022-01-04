@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "update", schema = "info", catalog = "")
+@Table(name = "update", schema = "info")
 public class UpdateEntity {
     private int id;
     private String url;
@@ -77,6 +77,6 @@ public class UpdateEntity {
 
     @PrePersist
     void createAt() {
-        this.createTime = Math.toIntExact(System.currentTimeMillis());
+        this.createTime = Math.toIntExact(System.currentTimeMillis() / 1000);
     }
 }

@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "follow", schema = "info", catalog = "")
+@Table(name = "follow", schema = "info")
 public class FollowEntity {
     private int id;
     private int followId;
@@ -66,6 +66,6 @@ public class FollowEntity {
 
     @PrePersist
     void createAt() {
-        this.createTime = Math.toIntExact(System.currentTimeMillis());
+        this.createTime = Math.toIntExact(System.currentTimeMillis() / 1000);
     }
 }

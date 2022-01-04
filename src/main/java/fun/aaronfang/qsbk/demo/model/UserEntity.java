@@ -118,7 +118,7 @@ public class UserEntity {
 
     @PrePersist
     void createAt() {
-        this.createTime = (int)System.currentTimeMillis();
+        this.createTime = Math.toIntExact(System.currentTimeMillis() / 1000);
     }
 
     @OneToOne(mappedBy = "userEntity")
@@ -137,7 +137,7 @@ public class UserEntity {
      * @return token
      */
     public static String getToken(UserEntity user, int expireIn) {
-        String token="";
+        String token;
         token= JWT.create()
                 .withAudience(String.valueOf(user.getId()))
                 .withExpiresAt(new Date(System.currentTimeMillis() + expireIn))

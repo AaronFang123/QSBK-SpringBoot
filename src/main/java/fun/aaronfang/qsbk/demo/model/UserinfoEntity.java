@@ -1,6 +1,6 @@
 package fun.aaronfang.qsbk.demo.model;
 
-import org.apache.catalina.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -90,6 +90,7 @@ public class UserinfoEntity {
 
     @OneToOne(cascade = CascadeType.ALL, targetEntity = UserEntity.class) //JPA注释： 一对一 关系
     @JoinColumn(name = "user_id", referencedColumnName="id")
+    @JsonIgnore
     public UserEntity getUserEntity() {
         return userEntity;
     }

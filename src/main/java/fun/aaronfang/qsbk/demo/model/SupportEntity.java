@@ -77,6 +77,6 @@ public class SupportEntity {
 
     @PrePersist
     void createAt() {
-        this.createTime = Math.toIntExact(System.currentTimeMillis());
+        this.createTime = Math.toIntExact(System.currentTimeMillis() / 1000);
     }
 }

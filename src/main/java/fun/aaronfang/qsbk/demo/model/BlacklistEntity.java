@@ -1,7 +1,6 @@
 package fun.aaronfang.qsbk.demo.model;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
@@ -67,6 +66,6 @@ public class BlacklistEntity {
 
     @PrePersist
     void createAt() {
-        this.createTime = Math.toIntExact(System.currentTimeMillis());
+        this.createTime = Math.toIntExact(System.currentTimeMillis() / 1000);
     }
 }
