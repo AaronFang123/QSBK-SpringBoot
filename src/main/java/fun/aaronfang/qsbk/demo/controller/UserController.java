@@ -4,18 +4,16 @@ package fun.aaronfang.qsbk.demo.controller;
 import fun.aaronfang.qsbk.demo.common.ApiValidationException;
 import fun.aaronfang.qsbk.demo.common.Result;
 import fun.aaronfang.qsbk.demo.config.QsbkProps;
-import fun.aaronfang.qsbk.demo.constants.ApiUserAuth;
 import fun.aaronfang.qsbk.demo.model.UserEntity;
 import fun.aaronfang.qsbk.demo.model.UserinfoEntity;
 import fun.aaronfang.qsbk.demo.repo.UserRepo;
 import fun.aaronfang.qsbk.demo.repo.UserinfoRepo;
 import fun.aaronfang.qsbk.demo.util.PhoneCacheUtils;
 import fun.aaronfang.qsbk.demo.util.RedisUtils;
+import fun.aaronfang.qsbk.demo.util.TimeUtil;
 import fun.aaronfang.qsbk.demo.validation.phone.PhoneValidation;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.query.Jpa21Utils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,10 +21,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -92,6 +86,7 @@ public class UserController {
             newUser.setPhone(phone);
             // 加密后的密码
             newUser.setPassword(passwordEncoder.encode(phone));
+            newUser.setStatus((byte) 1);
             log.info("newUser:" + newUser.toString());
             // 在用户信息表创建对应的记录（用户存放用户其他信息）
             UserinfoEntity userinfoEntity = new UserinfoEntity();
@@ -106,14 +101,14 @@ public class UserController {
             resultMap.put("username", newUser.getUsername());
             resultMap.put("phone", newUser.getPhone());
             resultMap.put("password", false);
-            resultMap.put("create_time", newUser.getCreateTime());
-            resultMap.put("update_time", newUser.getCreateTime());
-            resultMap.put("id", newUser.getId());
+            resultMap.put("create_time", TimeUtil.getDateToString(newUser.getCreateTime()));
+            resultMap.put("update_time", TimeUtil.getDateToString(newUser.getCreateTime()));
+            resultMap.put("id", String.valueOf(newUser.getId()));
             resultMap.put("logintype", "phone");
             resultMap.put("token", UserEntity.getToken(newUser, (int) qsbkProps.getTokenExpireIn()));
             resultMap.put("userinfo", userinfoEntity);
 
-            return new ResponseEntity<>(Result.buildResult(map), HttpStatus.OK);
+            return new ResponseEntity<>(Result.buildResult(resultMap), HttpStatus.OK);
 
         }
         UserEntity pairKey = pair.getKey();
@@ -124,9 +119,9 @@ public class UserController {
         resultMap.put("username", pairKey.getUsername());
         resultMap.put("phone", pairKey.getPhone());
         resultMap.put("password", false);
-        resultMap.put("create_time", pairKey.getCreateTime());
-        resultMap.put("update_time", pairKey.getCreateTime());
-        resultMap.put("id", pairKey.getId());
+        resultMap.put("create_time", TimeUtil.getDateToString(pairKey.getCreateTime()));
+        resultMap.put("update_time", TimeUtil.getDateToString(pairKey.getCreateTime()));
+        resultMap.put("id", String.valueOf(pairKey.getId()));
         resultMap.put("logintype", "phone");
         resultMap.put("token", UserEntity.getToken(pairKey, (int) qsbkProps.getTokenExpireIn()));
         resultMap.put("userinfo", pairKey.getUserinfoEntity());
