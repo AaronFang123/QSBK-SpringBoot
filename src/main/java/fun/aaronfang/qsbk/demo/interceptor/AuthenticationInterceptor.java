@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.Optional;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
@@ -37,11 +38,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
         if (method.isAnnotationPresent(ApiUserAuth.class)) {
-            return checkUserToken(request, response ,method);
+            if (!checkUserToken(request, response ,method)) {
+                return false;
+            }
         }
 
         if (method.isAnnotationPresent(ApiUserBindPhone.class)) {
-            return checkPhoneBind(request);
+            if (!checkPhoneBind(request)) {
+                return false;
+            }
         }
 
         if (method.isAnnotationPresent(ApiUserState.class)) {
@@ -74,6 +79,13 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
         String uid;
         try{
+            Date expiresAt = JWT.decode(token).getExpiresAt();
+            long expiresAtTime = expiresAt.getTime();
+            long currentTimeMillis = System.currentTimeMillis();
+            if (currentTimeMillis >= expiresAtTime) {
+                // token 超时，无效
+                throw new ApiValidationException("token过期",20003);
+            }
             uid = JWT.decode(token).getAudience().get(0);
         }catch (JWTDecodeException ex) {
             throw new RuntimeException("401");
@@ -90,9 +102,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             throw new RuntimeException("401");
         }
 
-        HttpSession session = request.getSession();
-        // 已登录信息保存在Session里
-        session.setAttribute(QsbkCommonConstants.TAG_LOGIN_SESSION, entity);
+//        HttpSession session = request.getSession();
+//        // 已登录信息保存在Session里
+//        session.setAttribute(QsbkCommonConstants.TAG_LOGIN_SESSION, entity);
         return true;
     }
 

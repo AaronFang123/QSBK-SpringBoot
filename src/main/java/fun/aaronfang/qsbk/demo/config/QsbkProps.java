@@ -16,4 +16,7 @@ public class QsbkProps {
 
     @Value("${qsbk.token.expire-in}")
     private long tokenExpireIn;
+
+    @Value("${qsbk.login.user_login_state_last}")
+    private long userLoginStateLast;
 }

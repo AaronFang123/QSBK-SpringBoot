@@ -36,6 +36,7 @@ qsbk:
   login:
     enable-sms: true
     expire-in: 60
+    user_login_state_last: 604800000
   token:
-    expire-in: 100000
+    expire-in: 100000000
 

@@ -14,6 +14,11 @@
       "name": "qsbk.token.expire-in",
       "type": "java.lang.Long",
       "description": "Description for qsbk.token.expire-in."
+    },
+    {
+      "name": "qsbk.login.user_login_state_last",
+      "type": "java.lang.Long",
+      "description": "Description for qsbk.login.user_login_state_last."
     }
   ]
 }

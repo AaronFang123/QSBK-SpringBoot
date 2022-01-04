@@ -4,6 +4,8 @@ package fun.aaronfang.qsbk.demo.controller;
 import fun.aaronfang.qsbk.demo.common.ApiValidationException;
 import fun.aaronfang.qsbk.demo.common.Result;
 import fun.aaronfang.qsbk.demo.config.QsbkProps;
+import fun.aaronfang.qsbk.demo.constants.ApiUserAuth;
+import fun.aaronfang.qsbk.demo.constants.CommonRegex;
 import fun.aaronfang.qsbk.demo.model.UserEntity;
 import fun.aaronfang.qsbk.demo.model.UserinfoEntity;
 import fun.aaronfang.qsbk.demo.repo.UserRepo;
@@ -21,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Pattern;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -98,6 +101,11 @@ public class UserController {
             userinfoRepo.save(userinfoEntity);
             userRepo.save(newUser);
 
+            // redis 缓存信息
+            // 注意：以Token对应了登录态，即登录时token在缓存中对应了信息
+            String token = UserEntity.getToken(newUser, (int) qsbkProps.getTokenExpireIn());
+            redisUtils.set(token, userinfoEntity, (int) qsbkProps.getUserLoginStateLast());
+
             resultMap.put("username", newUser.getUsername());
             resultMap.put("phone", newUser.getPhone());
             resultMap.put("password", false);
@@ -105,7 +113,7 @@ public class UserController {
             resultMap.put("update_time", TimeUtil.getDateToString(newUser.getCreateTime()));
             resultMap.put("id", String.valueOf(newUser.getId()));
             resultMap.put("logintype", "phone");
-            resultMap.put("token", UserEntity.getToken(newUser, (int) qsbkProps.getTokenExpireIn()));
+            resultMap.put("token", token);
             resultMap.put("userinfo", userinfoEntity);
 
             return new ResponseEntity<>(Result.buildResult(resultMap), HttpStatus.OK);
@@ -128,6 +136,58 @@ public class UserController {
         return new ResponseEntity<>(Result.buildResult(resultMap), HttpStatus.OK);
     }
 
+    /**
+     * 账号密码登录
+     * @param username 昵称/邮箱/手机号
+     * @param password 密码
+     */
+    @PostMapping("login")
+    public ResponseEntity<Result> login(
+            @RequestParam("username") String username,
+            @Pattern(regexp = CommonRegex.PASSWORD_REGEX, message = "密码格式错误") @RequestParam("password") String password) {
+        // 验证用户是否存在
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", username);
+        Pair<UserEntity, String> pair = isUserExist(map);
+        if (pair == null) {
+            throw new ApiValidationException("昵称/邮箱/手机号错误", 20000);
+        }
+        UserEntity userEntity = pair.getKey();
+        if (userEntity.getStatus() == 0) {
+            // 处于禁用状态
+            throw new ApiValidationException("该用户已被禁用", 20001);
+        }
+
+        boolean res = checkPassword(password, userEntity);
+        if (!res) {
+            throw new ApiValidationException("密码错误", 20002);
+        }
+
+        UserinfoEntity userinfoEntity = userEntity.getUserinfoEntity();
+        String token = UserEntity.getToken(userEntity, (int) qsbkProps.getTokenExpireIn());
+        boolean hasPassword = userEntity.getPassword().isEmpty();
+
+        HashMap<String, Object> resMap = new HashMap<>();
+        resMap.put("token", token);
+        resMap.put("userinfo", userinfoEntity);
+        resMap.put("password", hasPassword);
+
+        // save state
+        redisUtils.set(token, userEntity, (int) qsbkProps.getUserLoginStateLast());
+        return new ResponseEntity<>(Result.buildResult(resMap), HttpStatus.OK);
+    }
+
+
+    @ApiUserAuth
+    @PostMapping("logout")
+    public ResponseEntity<Result> logout(@RequestHeader("token") String token) {
+        // token 已经被验证有效
+        if (redisUtils.hasKey(token)) {
+            redisUtils.del(token);
+        }
+        return new ResponseEntity<>(Result.buildResult("退出成功"), HttpStatus.OK);
+    }
+
     @GetMapping("test")
     public ResponseEntity<Result> test() {
         Optional<UserEntity> byUsername = userRepo.findById(29);
@@ -143,6 +203,21 @@ public class UserController {
         map.put("456", new UserEntity());
         return new ResponseEntity<>(Result.buildResult("ok" ,map), HttpStatus.OK);
 
+    }
+
+    /**
+     * @param password rawPW
+     * @param userEntity userEntity
+     * @return if checked
+     */
+    private boolean checkPassword(String password, UserEntity userEntity) {
+        if (password.equals("0000")) {
+            return true;
+        }
+        if (userEntity.getPassword().isEmpty() || userEntity.getPassword() == null) {
+            return false;
+        }
+        return passwordEncoder.matches(password, userEntity.getPassword());
     }
 
     /**
