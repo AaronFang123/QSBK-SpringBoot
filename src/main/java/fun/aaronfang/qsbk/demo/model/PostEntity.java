@@ -1,6 +1,7 @@
 package fun.aaronfang.qsbk.demo.model;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -18,6 +19,7 @@ public class PostEntity {
     private Integer postClassId;
     private Integer shareId;
     private Byte isopen;
+    private List<TopicEntity> topicEntityList;
 
     @Id
     @Column(name = "id")
@@ -137,6 +139,15 @@ public class PostEntity {
 
     public void setIsopen(Byte isopen) {
         this.isopen = isopen;
+    }
+
+    @ManyToMany(mappedBy = "postEntityList")
+    public List<TopicEntity> getTopicEntityList() {
+        return topicEntityList;
+    }
+
+    public void setTopicEntityList(List<TopicEntity> topicEntityList) {
+        this.topicEntityList = topicEntityList;
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,7 +18,7 @@ public class TopicEntity {
     private Timestamp createTime;
     private Integer topicClassId;
 //    private TopicClassEntity topicClassEntity;
-
+    private List<PostEntity> postEntityList;
 
     @Id
     @Column(name = "id")
@@ -87,6 +88,20 @@ public class TopicEntity {
 
     public void setTopicClassId(Integer topicClassId) {
         this.topicClassId = topicClassId;
+    }
+
+    @ManyToMany
+    @JoinTable(
+            name = "topic_post",
+            joinColumns = @JoinColumn(name = "topic_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    public List<PostEntity> getPostEntityList() {
+        return postEntityList;
+    }
+
+    public void setPostEntityList(List<PostEntity> postEntityList) {
+        this.postEntityList = postEntityList;
     }
 
     @Override
