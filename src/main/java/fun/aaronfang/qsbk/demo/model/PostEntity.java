@@ -1,5 +1,8 @@
 package fun.aaronfang.qsbk.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
@@ -8,7 +11,6 @@ import java.util.Objects;
 @Table(name = "post", schema = "info")
 public class PostEntity {
     private int id;
-    private int userId;
     private String title;
     private String titlepic;
     private String content;
@@ -20,6 +22,8 @@ public class PostEntity {
     private Integer shareId;
     private Byte isopen;
     private List<TopicEntity> topicEntityList;
+    private UserEntity userEntityWithPost;
+    private List<ImageEntity> imageEntityList;
 
     @Id
     @Column(name = "id")
@@ -29,16 +33,6 @@ public class PostEntity {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    @Basic
-    @Column(name = "user_id")
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     @Basic
@@ -142,6 +136,7 @@ public class PostEntity {
     }
 
     @ManyToMany(mappedBy = "postEntityList")
+    @JsonIgnore
     public List<TopicEntity> getTopicEntityList() {
         return topicEntityList;
     }
@@ -150,17 +145,39 @@ public class PostEntity {
         this.topicEntityList = topicEntityList;
     }
 
+    @ManyToOne(cascade = CascadeType.ALL, targetEntity = UserEntity.class)
+    @JoinColumn(name = "user_id", referencedColumnName="id")
+    @JsonIgnore
+    public UserEntity getUserEntityWithPost() {
+        return userEntityWithPost;
+    }
+
+    public void setUserEntityWithPost(UserEntity userEntity) {
+        this.userEntityWithPost = userEntity;
+    }
+
+
+    @ManyToMany(mappedBy = "postEntityList")
+    @JsonProperty("images")
+    public List<ImageEntity> getImageEntityList() {
+        return imageEntityList;
+    }
+
+    public void setImageEntityList(List<ImageEntity> imageEntityList) {
+        this.imageEntityList = imageEntityList;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PostEntity that = (PostEntity) o;
-        return id == that.id && userId == that.userId && sharenum == that.sharenum && type == that.type && Objects.equals(title, that.title) && Objects.equals(titlepic, that.titlepic) && Objects.equals(content, that.content) && Objects.equals(path, that.path) && Objects.equals(createTime, that.createTime) && Objects.equals(postClassId, that.postClassId) && Objects.equals(shareId, that.shareId) && Objects.equals(isopen, that.isopen);
+        return id == that.id && sharenum == that.sharenum && type == that.type && Objects.equals(title, that.title) && Objects.equals(titlepic, that.titlepic) && Objects.equals(content, that.content) && Objects.equals(path, that.path) && Objects.equals(createTime, that.createTime) && Objects.equals(postClassId, that.postClassId) && Objects.equals(shareId, that.shareId) && Objects.equals(isopen, that.isopen);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, title, titlepic, content, sharenum, path, type, createTime, postClassId, shareId, isopen);
+        return Objects.hash(id, title, titlepic, content, sharenum, path, type, createTime, postClassId, shareId, isopen);
     }
 
     @PrePersist

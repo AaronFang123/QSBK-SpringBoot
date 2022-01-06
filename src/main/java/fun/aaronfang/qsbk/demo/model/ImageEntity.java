@@ -1,6 +1,9 @@
 package fun.aaronfang.qsbk.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -10,6 +13,7 @@ public class ImageEntity {
     private String url;
     private Integer createTime;
     private Integer userId;
+    private List<PostEntity> postEntityList;
 
     @Id
     @Column(name = "id")
@@ -49,6 +53,21 @@ public class ImageEntity {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+            name = "post_image",
+            joinColumns = @JoinColumn(name = "image_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    public List<PostEntity> getPostEntityList() {
+        return postEntityList;
+    }
+
+    public void setPostEntityList(List<PostEntity> postEntityList) {
+        this.postEntityList = postEntityList;
     }
 
     @Override

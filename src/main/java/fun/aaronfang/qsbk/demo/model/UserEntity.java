@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -20,6 +21,7 @@ public class UserEntity {
     private byte status;
     private Integer createTime;
     private UserinfoEntity userinfoEntity;
+    private List<PostEntity> postEntityList;
 
     @Id
     @Column(name = "id")
@@ -129,6 +131,16 @@ public class UserEntity {
 
     public void setUserinfoEntity(UserinfoEntity userinfoEntity) {
         this.userinfoEntity = userinfoEntity;
+    }
+
+    @OneToMany(mappedBy = "userEntityWithPost", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @JsonIgnore
+    public List<PostEntity> getPostEntityList() {
+        return postEntityList;
+    }
+
+    public void setPostEntityList(List<PostEntity> postEntityList) {
+        this.postEntityList = postEntityList;
     }
 
     /**
